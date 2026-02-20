@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 3h
+  receiver: 'telegram'
+
+receivers:
+- name: 'telegram'
+  telegram_configs:
+  - bot_token: '{{ TELEGRAM_BOT_TOKEN }}'
+    chat_id: {{ TELEGRAM_CHAT_ID }}
+    parse_mode: 'HTML'
+    disable_notifications: false
+    send_resolved: true
+    message: '{{ range .Alerts }}{{ if eq .Status "firing" }}🔴 <b>{{ .Annotations.summary }}</b>{{ else }}🟢 <b>{{ .Annotations.summary }}</b>{{ end }}
+
+{{ if .Annotations.description }}{{ .Annotations.description }}{{ end }}
+
+📍 Статус: {{ if eq .Status "firing" }}НЕ РАБОТАЕТ{{ else }}ДОСТУПНО{{ end }}
+
+{{ end }}'

@@ -1,0 +1,52 @@
+groups:
+  - name: alerts
+    interval: 30s
+    rules:
+      - alert: SiteDown
+        expr: probe_success{instance="https://your-domain.com"} == 0
+        for: 1m
+        annotations:
+          summary: "Сайт недоступен"
+          description: "Сайт не отвечает больше 1 минуты"
+
+      - alert: TesterDown
+        expr: probe_success{instance=~"http://.*:8081"} == 0
+        for: 1m
+        annotations:
+          summary: "Тестер недоступен"
+          description: "Тестер на порту 8081 не отвечает больше 1 минуты"
+
+      - alert: HostkeyDown
+        expr: probe_success{instance="{{ HOSTKEY_IP }}"} == 0
+        for: 1m
+        annotations:
+          summary: "Хостинг недоступен"
+          description: "Сервер не отвечает на ping больше 1 минуты"
+
+      - alert: HostkeyHighCPU
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        annotations:
+          summary: "Высокая загрузка CPU на хостинге"
+          description: "CPU загружен на {{ $value }}%"
+
+      - alert: HostkeyLowDisk
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        annotations:
+          summary: "Мало места на диске хостинга"
+          description: "Осталось {{ $value }}% свободного места"
+
+      - alert: RPiHighTemp
+        expr: node_hwmon_temp_celsius > 75
+        for: 5m
+        annotations:
+          summary: "Высокая температура Raspberry Pi"
+          description: "Температура: {{ $value }}°C"
+
+      - alert: SSLCertificateExpiring
+        expr: probe_ssl_earliest_cert_expiry - time() < 14 * 24 * 3600
+        for: 1h
+        annotations:
+          summary: "SSL сертификат скоро истечет"
+          description: "Сертификат истекает через {{ $value | humanizeDuration }}"
