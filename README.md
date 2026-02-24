@@ -3,9 +3,6 @@
 
 # 📝 2️⃣ ALERTING
 
-``markdown
-# ALERTING
-
 ![Главный скриншот](screenshots/screen1.jpg)
 
 ## О проекте
