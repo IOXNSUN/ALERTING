@@ -67,5 +67,5 @@
 ``bash
 git clone https://github.com/IOXNSUN/ALERTING.git
 cd ALERTING
-# Настроить Telegram-бота в config.yml
+Настроить Telegram-бота в config.yml
 docker-compose up -d
